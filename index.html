@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Voice Calculator</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+  <main class="calculator">
+
+    <!-- Top bar: title + option to hear the answer spoken back -->
+    <header class="topbar">
+      <h1 class="topbar__title">Voice Calculator</h1>
+      <label class="switch">
+        <input type="checkbox" id="speakToggle" checked />
+        <span>Speak result</span>
+      </label>
+    </header>
+
+    <!-- Calculator display: small line = expression, big line = number -->
+    <section class="display" aria-live="polite">
+      <div class="display__history" id="history"></div>
+      <div class="display__value" id="value">0</div>
+    </section>
+
+    <!-- Voice panel: microphone button + listening status + what you said -->
+    <section class="voice" aria-label="Voice control">
+      <button class="mic" id="micBtn" type="button" aria-label="Start listening" title="Click to speak (shortcut: M)">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path
+            d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-3.08A7 7 0 0 0 19 11h-2z" />
+        </svg>
+      </button>
+
+      <div class="voice__info">
+        <!-- data-state changes: idle | listening | processing | success | error | unsupported -->
+        <div class="status" id="status" data-state="idle" role="status" aria-live="polite">
+          <span class="status__dot"></span>
+          <span id="statusText">Tap the mic and speak</span>
+        </div>
+        <div class="transcript" id="transcript">Try: “twelve times four”</div>
+      </div>
+    </section>
+
+    <!-- Result area: shows the full calculation and its answer -->
+    <section class="result" aria-live="polite">
+      <span class="result__label">Result</span>
+      <span class="result__text" id="result">—</span>
+    </section>
+
+    <!-- Camera panel: write digits in the air with your index finger -->
+    <section class="gesture" aria-label="Hand writing with the camera">
+      <div class="gesture__bar">
+        <button class="cam-btn" id="camBtn" type="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M17 10.5V7a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-3.5l4 4v-11l-4 4z" />
+          </svg>
+          <span>Write with your hand</span>
+        </button>
+        <span class="chip" id="faceChip" data-on="false" hidden>No face in view</span>
+      </div>
+
+      <div class="gesture__view" id="camView" hidden>
+        <video id="video" playsinline muted></video>
+        <canvas id="overlay"></canvas>
+        <div class="gesture__badge" id="digitBadge" data-ok="true"></div>
+      </div>
+
+      <p class="gesture__status" id="camStatus">Camera is off. Turn it on to write digits with your finger.</p>
+    </section>
+
+    <!-- Keypad: always works, even when voice is unavailable -->
+    <section class="keys">
+      <button class="key key--function key--wide" data-action="clear">AC</button>
+      <button class="key key--function" data-action="delete" aria-label="Delete">⌫</button>
+      <button class="key key--function" data-action="percent">%</button>
+
+      <button class="key" data-digit="7">7</button>
+      <button class="key" data-digit="8">8</button>
+      <button class="key" data-digit="9">9</button>
+      <button class="key key--operator" data-operator="/">÷</button>
+
+      <button class="key" data-digit="4">4</button>
+      <button class="key" data-digit="5">5</button>
+      <button class="key" data-digit="6">6</button>
+      <button class="key key--operator" data-operator="*">×</button>
+
+      <button class="key" data-digit="1">1</button>
+      <button class="key" data-digit="2">2</button>
+      <button class="key" data-digit="3">3</button>
+      <button class="key key--operator" data-operator="-">−</button>
+
+
+
+      <button class="key" data-digit="0">0</button>
+      <button class="key" data-action="decimal">.</button>
+      <button class="key key--equals" data-action="equals">=</button>
+      <button class="key key--operator" data-operator="+">+</button>
+    </section>
+
+    <p class="hint" id="fileHint" hidden>
+      Tip: the microphone and camera work best on http://localhost. Open this folder
+      with VS Code “Live Server” instead of double-clicking the file.
+    </p>
+
+  </main>
+
+  <script src="script.js"></script>
+  <!-- Camera hand-writing (a module, so it needs http://localhost) -->
+  <script type="module" src="gesture.js"></script>
+</body>
+
+</html>

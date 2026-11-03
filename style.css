@@ -1,0 +1,386 @@
+/* ---------- Design tokens (change colors here) ---------- */
+:root {
+  --bg: #dbe6f5;
+  --card: #f1f5f4;
+  --display-bg: #3a3a3c;
+  --display-text: #ffffff;
+  --key-bg: #e3e8e8;
+  --key-text: #4b5563;
+  --function-bg: #cfd6d8;
+  --operator: #e8833a;
+  --operator-hover: #f0954f;
+  --equals: #3b6ef5;
+  --equals-hover: #5584ff;
+  --panel: #e6ecee;
+  --text-muted: #6b7280;
+
+  --state-idle: #9ca3af;
+  --state-listening: #ef4444;
+  --state-processing: #f59e0b;
+  --state-success: #22c55e;
+  --state-error: #dc2626;
+
+  --radius: 14px;
+  --gap: 12px;
+}
+
+/* ---------- Base ---------- */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 16px 0;
+  background: var(--bg);
+  font-family: "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+}
+
+/* ---------- Calculator card ---------- */
+.calculator {
+  width: min(94vw, 370px);
+  padding: 18px;
+  background: var(--card);
+  border-radius: 22px;
+  box-shadow: 0 20px 45px rgba(30, 50, 90, 0.25);
+}
+
+/* ---------- Top bar ---------- */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.topbar__title {
+  font-size: 1.05rem;
+  color: #374151;
+}
+
+.switch {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.switch input {
+  accent-color: var(--equals);
+}
+
+/* ---------- Display ---------- */
+.display {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: flex-end;
+  min-height: 88px;
+  margin-bottom: 12px;
+  padding: 12px 18px;
+  background: var(--display-bg);
+  color: var(--display-text);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.display__history {
+  min-height: 18px;
+  font-size: 0.9rem;
+  color: #a8a8ad;
+}
+
+.display__value {
+  max-width: 100%;
+  font-size: 2.1rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow-x: auto;
+}
+
+/* ---------- Voice panel ---------- */
+.voice {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 12px;
+  padding: 12px;
+  background: var(--panel);
+  border-radius: var(--radius);
+}
+
+.mic {
+  flex-shrink: 0;
+  width: 56px;
+  height: 56px;
+  border: none;
+  border-radius: 50%;
+  background: var(--equals);
+  color: #fff;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.mic svg {
+  width: 26px;
+  height: 26px;
+  fill: currentColor;
+}
+
+.mic:hover:not(:disabled)  { background: var(--equals-hover); }
+.mic:active:not(:disabled) { transform: scale(0.92); }
+.mic:focus-visible { outline: 3px solid var(--equals); outline-offset: 3px; }
+.mic:disabled { background: #b8bfc6; cursor: not-allowed; }
+
+/* While listening: red button with a pulsing ring */
+.mic.is-listening {
+  background: var(--state-listening);
+  animation: pulse 1.3s infinite;
+}
+
+@keyframes pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.55); }
+  70%  { box-shadow: 0 0 0 16px rgba(239, 68, 68, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+}
+
+.voice__info {
+  min-width: 0;
+  flex: 1;
+}
+
+/* ---------- Listening status ---------- */
+.status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+.status__dot {
+  flex-shrink: 0;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--state-idle);
+}
+
+.status[data-state="listening"]  .status__dot { background: var(--state-listening); animation: blink 1s infinite; }
+.status[data-state="processing"] .status__dot { background: var(--state-processing); }
+.status[data-state="success"]    .status__dot { background: var(--state-success); }
+.status[data-state="error"]      .status__dot,
+.status[data-state="unsupported"] .status__dot { background: var(--state-error); }
+
+.status[data-state="error"],
+.status[data-state="unsupported"] { color: var(--state-error); }
+
+@keyframes blink {
+  50% { opacity: 0.25; }
+}
+
+.transcript {
+  margin-top: 4px;
+  min-height: 1.2em;
+  font-size: 0.85rem;
+  font-style: italic;
+  color: var(--text-muted);
+  overflow-wrap: anywhere;
+}
+
+/* ---------- Result area ---------- */
+.result {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 14px;
+  padding: 10px 14px;
+  background: #fff;
+  border: 1px solid #d9e0e3;
+  border-left: 5px solid var(--equals);
+  border-radius: var(--radius);
+}
+
+.result__label {
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.result__text {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1f2937;
+  overflow-wrap: anywhere;
+}
+
+/* ---------- Keys grid (4 columns) ---------- */
+.keys {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--gap);
+}
+
+.key {
+  height: 58px;
+  border: none;
+  border-radius: var(--radius);
+  background: var(--key-bg);
+  color: var(--key-text);
+  font-size: 1.25rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.08s ease, filter 0.15s ease, background 0.15s ease;
+}
+
+.key:hover  { filter: brightness(0.96); }
+.key:active { transform: scale(0.94); }
+.key:focus-visible { outline: 3px solid var(--equals); outline-offset: 2px; }
+
+.key--wide     { grid-column: span 2; }
+.key--function { background: var(--function-bg); }
+
+.key--operator {
+  background: var(--operator);
+  color: #fff;
+  font-size: 1.5rem;
+}
+.key--operator:hover { background: var(--operator-hover); filter: none; }
+
+/* Highlight the operator that is currently selected */
+.key--operator.is-active {
+  background: #fff;
+  color: var(--operator);
+  box-shadow: inset 0 0 0 2px var(--operator);
+}
+
+.key--equals {
+  background: var(--equals);
+  color: #fff;
+  font-size: 1.5rem;
+}
+.key--equals:hover { background: var(--equals-hover); filter: none; }
+
+.hint {
+  margin-top: 12px;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+/* ---------- Camera / hand writing ---------- */
+.gesture {
+  margin-bottom: 12px;
+  padding: 12px;
+  background: var(--panel);
+  border-radius: var(--radius);
+}
+
+.gesture__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.cam-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border: none;
+  border-radius: 999px;
+  background: var(--equals);
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.cam-btn svg {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+}
+
+.cam-btn:hover:not(:disabled)  { background: var(--equals-hover); }
+.cam-btn:active:not(:disabled) { transform: scale(0.96); }
+.cam-btn:focus-visible { outline: 3px solid var(--equals); outline-offset: 3px; }
+.cam-btn.is-on { background: var(--state-error); }
+.cam-btn:disabled { background: #b8bfc6; cursor: not-allowed; }
+
+.chip {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: #d1d5db;
+  color: #374151;
+}
+.chip[data-on="true"] { background: #bbf7d0; color: #166534; }
+
+.gesture__view {
+  position: relative;
+  margin-top: 10px;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border-radius: var(--radius);
+  background: #111827;
+}
+
+.gesture__view video,
+.gesture__view canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Mirror the video so it behaves like a mirror (the overlay is mirrored in code) */
+.gesture__view video {
+  object-fit: cover;
+  transform: scaleX(-1);
+}
+
+/* Big digit that pops up after each recognition */
+.gesture__badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  min-width: 52px;
+  padding: 2px 12px;
+  border-radius: 12px;
+  background: rgba(34, 197, 94, 0.9);
+  color: #fff;
+  font-size: 2.6rem;
+  font-weight: 700;
+  text-align: center;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+.gesture__badge[data-ok="false"] { background: rgba(220, 38, 38, 0.9); }
+.gesture__badge.show { opacity: 1; }
+
+.gesture__status {
+  margin-top: 8px;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+.gesture__status.is-error { color: var(--state-error); font-weight: 600; }
+
+/* Respect users who prefer less motion */
+@media (prefers-reduced-motion: reduce) {
+  .mic.is-listening,
+  .status[data-state="listening"] .status__dot { animation: none; }
+}
